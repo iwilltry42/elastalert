@@ -1150,10 +1150,14 @@ class SlackAlerter(Alerter):
 
     def populate_fields(self, matches):
         alert_fields = []
-        for arg in self.slack_alert_fields:
-            arg = copy.copy(arg)
-            arg['value'] = lookup_es_key(matches[0], arg['value'])
-            alert_fields.append(arg)
+        for i, match in enumerate(matches):
+            if i > 10:
+                logging.warning("Reached limit of 10 matches to attach to slack message!")
+                break
+            for arg in self.slack_alert_fields:
+                arg = copy.copy(arg)
+                arg['value'] = lookup_es_key(match, arg['value'])
+                alert_fields.append(arg)
         return alert_fields
 
     def alert(self, matches):
