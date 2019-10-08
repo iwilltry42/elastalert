@@ -1132,6 +1132,7 @@ class SlackAlerter(Alerter):
         self.slack_attach_kibana_discover_url = self.rule.get('slack_attach_kibana_discover_url', False)
         self.slack_kibana_discover_color = self.rule.get('slack_kibana_discover_color', '#ec4b98')
         self.slack_kibana_discover_title = self.rule.get('slack_kibana_discover_title', 'Discover in Kibana')
+        self.slack_fields_loop_matches = self.rule.get('slack_fields_loop_matches', False)
 
     def format_body(self, body):
         # https://api.slack.com/docs/formatting
@@ -1150,6 +1151,7 @@ class SlackAlerter(Alerter):
 
     def populate_fields(self, matches):
         alert_fields = []
+        logging.warning("matches", matches)
         for i, match in enumerate(matches):
             if i > 10:
                 logging.warning("Reached limit of 10 matches to attach to slack message!")
@@ -1158,6 +1160,8 @@ class SlackAlerter(Alerter):
                 arg = copy.copy(arg)
                 arg['value'] = lookup_es_key(match, arg['value'])
                 alert_fields.append(arg)
+            if not self.slack_fields_loop_matches:
+                break
         return alert_fields
 
     def alert(self, matches):
