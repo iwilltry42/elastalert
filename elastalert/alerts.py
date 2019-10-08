@@ -1151,7 +1151,6 @@ class SlackAlerter(Alerter):
 
     def populate_fields(self, matches):
         alert_fields = []
-        logging.warning("matches", matches)
         for i, match in enumerate(matches):
             if i > 10:
                 logging.warning("Reached limit of 10 matches to attach to slack message!")
